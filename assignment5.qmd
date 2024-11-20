@@ -8,6 +8,8 @@ editor: visual
 
 You may work in pairs or individually for this assignment. Make sure you join a group in Canvas if you are working in pairs. Turn in this assignment as an HTML or PDF file to ELMS. Make sure to include the R Markdown or Quarto file that was used to generate it. Include the GitHub link for the repository containing these files.
 
+### GitHub link: https://github.com/mollyfischfriedman/FischFriedman-Owen-a5
+
 ```{r}
 library(censusapi)
 library(tidyverse)
@@ -60,7 +62,7 @@ ggplot(acs_map) + geom_polygon(aes(x = long, y = lat, group = group, fill = inco
 
 We want to find clusters of counties that are similar in their population, average household income and per capita income. First, clean the data so that you have the appropriate variables to use for clustering. Next, create the distance matrix of the cleaned data. This distance matrix can be used to cluster counties, e.g. using the ward method.
 
-``` {r}
+```{r}
 hclust <- acs_il_c %>% select(pop, hh_income, income)
 hclust_dist <- dist(hclust)
 hc_ward <- hclust(hclust_dist, method = "ward.D2")
@@ -68,7 +70,7 @@ hc_ward <- hclust(hclust_dist, method = "ward.D2")
 
 Plot the dendrogram to find a reasonable number of clusters. Draw boxes around the clusters of your cluster solution.
 
-``` {r}
+```{r}
 plot(hc_ward, main = "Ward", xlab = "", sub = "")
 ```
 
