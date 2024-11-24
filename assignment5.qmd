@@ -15,6 +15,8 @@ library(censusapi)
 library(tidyverse)
 library(magrittr)
 library(factoextra)
+library(cluster)
+library(factoextra)
 ```
 
 ## Exploring ACS Data
@@ -79,7 +81,7 @@ rect.hclust(hc_ward,
 
 Visualize the county clusters on a map. For this task, create a new `acs_map` object that now also includes cluster membership as a new column. This column should be called `cluster`.
 
-``` {r, fig.height = 6.5, fig.width = 6}
+```{r, fig.height = 6.5, fig.width = 6}
 cluster <- cutree(hc_ward, 4)
 acs_il_c$cluster <- cluster
 acs_map <- left_join(il_map, acs_il_c, by="subregion")
@@ -116,26 +118,44 @@ save(acs_map, file="~/Downloads/acs_map.Rda")
 As before, clean our data for clustering census tracts based on population, average household income and per capita income.
 
 ```{r}
-#hclust <- acs_il_c %>% select(pop, hh_income, income)
-#hclust_dist <- dist(hclust)
-#hc_ward <- hclust(hclust_dist, method = "ward.D2")
+hclust <- acs_il_c %>% select(pop, hh_income, income)
+hclust_dist <- dist(hclust)
+hc_ward <- hclust(hclust_dist, method = "ward.D2")
 ```
 
 Since we want to use K Means in this section, we start by determining the optimal number of K that results in Clusters with low within but high between variation. Plot within cluster sums of squares for a range of K (e.g. up to 20).
 
 ```{r}
+fviz_nbclust(hclust, kmeans, method = "wss")
 
 ```
 
 Run `kmeans()` for the optimal number of clusters based on the plot above.
 
 ```{r}
+km_1 <- kmeans(hclust, 2, nstart = 20)
+km_1
+
+kplot <- ggplot(data = hclust, aes(x = hh_income, y = income, color = as.factor(km_1$cluster))) +
+  geom_point(size = 4) +
+  theme_minimal()
+kplot
 
 ```
 
 Find the mean population, household income and per capita income grouped by clusters. In addition, display the most frequent county that can be observed within each cluster.
 
 ```{r}
+hclust$cluster <- km_1$cluster
+
+hclust %>%
+  filter(cluster==1) %>%
+  summary(pop, hh_income, income)
+
+hclust %>%
+  filter(cluster==2) %>%
+  summary(pop, hh_income, income)
+
 
 ```
 
