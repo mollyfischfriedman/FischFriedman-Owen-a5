@@ -79,6 +79,14 @@ rect.hclust(hc_ward,
 
 Visualize the county clusters on a map. For this task, create a new `acs_map` object that now also includes cluster membership as a new column. This column should be called `cluster`.
 
+``` {r, fig.height = 6.5, fig.width = 6}
+cluster <- cutree(hc_ward, 4)
+acs_il_c$cluster <- cluster
+acs_map <- left_join(il_map, acs_il_c, by="subregion")
+head(acs_map)
+ggplot(acs_map) + geom_polygon(aes(x = long, y = lat, group = group, fill = cluster))
+```
+
 ## Census Tracts
 
 For the next section we need ACS data on a census tract level. We use the same variables as before.
