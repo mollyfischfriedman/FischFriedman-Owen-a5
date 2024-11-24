@@ -118,41 +118,37 @@ save(acs_map, file="~/Downloads/acs_map.Rda")
 As before, clean our data for clustering census tracts based on population, average household income and per capita income.
 
 ```{r}
-hclust <- acs_il_c %>% select(pop, hh_income, income)
-hclust_dist <- dist(hclust)
-hc_ward <- hclust(hclust_dist, method = "ward.D2")
+tclust <- acs_il_t %>% select(pop, hh_income, income, tract, county, state)
+tclust_dist <- dist(tclust)
+
+tclust[tclust == -666666666] <- NA
 ```
 
 Since we want to use K Means in this section, we start by determining the optimal number of K that results in Clusters with low within but high between variation. Plot within cluster sums of squares for a range of K (e.g. up to 20).
 
 ```{r}
-fviz_nbclust(hclust, kmeans, method = "wss")
+fviz_nbclust(na.omit(tclust), kmeans, method = "wss")
 
 ```
 
 Run `kmeans()` for the optimal number of clusters based on the plot above.
 
 ```{r}
-km_1 <- kmeans(hclust, 2, nstart = 20)
+km_1 <- kmeans(na.omit(tclust), 2, nstart = 20)
 km_1
-
-kplot <- ggplot(data = hclust, aes(x = hh_income, y = income, color = as.factor(km_1$cluster))) +
-  geom_point(size = 4) +
-  theme_minimal()
-kplot
 
 ```
 
 Find the mean population, household income and per capita income grouped by clusters. In addition, display the most frequent county that can be observed within each cluster.
 
 ```{r}
-hclust$cluster <- km_1$cluster
+tclust$cluster <- km_1$cluster
 
-hclust %>%
+tclust %>%
   filter(cluster==1) %>%
   summary(pop, hh_income, income)
 
-hclust %>%
+tclust %>%
   filter(cluster==2) %>%
   summary(pop, hh_income, income)
 
