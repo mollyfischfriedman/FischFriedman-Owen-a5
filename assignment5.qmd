@@ -72,6 +72,9 @@ Plot the dendrogram to find a reasonable number of clusters. Draw boxes around t
 
 ```{r}
 plot(hc_ward, main = "Ward", xlab = "", sub = "")
+rect.hclust(hc_ward, 
+            k = 4, 
+            border = "red")
 ```
 
 Visualize the county clusters on a map. For this task, create a new `acs_map` object that now also includes cluster membership as a new column. This column should be called `cluster`.
