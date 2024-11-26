@@ -142,15 +142,21 @@ km_1
 Find the mean population, household income and per capita income grouped by clusters. In addition, display the most frequent county that can be observed within each cluster.
 
 ```{r}
-tclust$cluster <- km_1$cluster
+tclust$cluster[which(!is.na(tclust$hh_income))] <- km_1$cluster
 
 tclust %>%
   filter(cluster==1) %>%
-  summary(pop, hh_income, income)
+  summarise(mean_pop=mean(pop),
+            mean_hh_income=mean(hh_income),
+            mean_income=mean(income),
+            most_freq_county=names(sort(-table(tclust$county)))[1])
 
 tclust %>%
   filter(cluster==2) %>%
-  summary(pop, hh_income, income)
+  summarise(mean_pop=mean(pop),
+            mean_hh_income=mean(hh_income),
+            mean_income=mean(income),
+            most_freq_county=names(sort(-table(tclust$county)))[1])
 
 
 ```
