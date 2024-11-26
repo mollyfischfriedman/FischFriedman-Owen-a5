@@ -104,10 +104,9 @@ acs_il_t <- getCensus(name = "acs/acs5",
                    hh_income = B19013_001E,
                    income = B19301_001E)
 
-
-
 head(acs_il_t)
 
+#saving Rda files
 save(acs_il_c, file="~/Downloads/acs_il_c.Rda")
 save(acs_il_t, file="~/Downloads/acs_il_t.Rda")
 save(acs_map, file="~/Downloads/acs_map.Rda")
@@ -128,7 +127,6 @@ Since we want to use K Means in this section, we start by determining the optima
 
 ```{r}
 fviz_nbclust(na.omit(tclust), kmeans, method = "wss")
-
 ```
 
 Run `kmeans()` for the optimal number of clusters based on the plot above.
@@ -136,7 +134,6 @@ Run `kmeans()` for the optimal number of clusters based on the plot above.
 ```{r}
 km_1 <- kmeans(na.omit(tclust), 2, nstart = 20)
 km_1
-
 ```
 
 Find the mean population, household income and per capita income grouped by clusters. In addition, display the most frequent county that can be observed within each cluster.
@@ -164,12 +161,6 @@ tclust %>%
 As you might have seen earlier, it's not always clear which number of clusters is the optimal choice. To automate K Means clustering, program a function based on `kmeans()` that takes K as an argument. You can fix the other arguments, e.g. such that a specific dataset is always used when calling the function.
 
 ```{r}
-
-kfunction <- function(k, n){
-  kmeans(tclust, k, nstart = n)
-}
-
-## Molly's code 
 kfunction <- function(k){
   kmeans(na.omit(tclust), k)
 }
@@ -178,20 +169,6 @@ kfunction <- function(k){
 We want to utilize this function to iterate over multiple Ks (e.g., K = 2, ..., 10) and -- each time -- add the resulting cluster membership as a new variable to our (cleaned) original data frame (`acs_il_t`). There are multiple solutions for this task, e.g. think about the `apply` family or `for` loops.
 
 ```{r}
-
-
-
-kfunction2 <- function(k, y){
-  km_1 <- kmeans(na.omit(tclust), k, nstart = y)
-  tclust$cluster[which(!is.na(tclust$hh_income))] <- km_1$cluster
-  acs_il_t$cluster[which(!is.na(tclust$hh_income))] <- tclust$cluster[which(!is.na(tclust$hh_income))]
-  #acs_il_t$cluster[which(!is.na(tclust$hh_income))] <- paste(acs_il_t$cluster[which(!is.na(tclust$hh_income))], "_", k)
-}
-
-kfunction2(4, 10)
-table(acs_il_t$cluster)
-
-## Molly's code
 
 kfunction2 <- function(k){
   km <- kfunction(k)
@@ -209,7 +186,5 @@ for (i in seq(2, 10, by=2)) {
 Finally, display the first rows of the updated data set (with multiple cluster columns).
 
 ```{r}
-
-head(acs_il_t, 5)
-
+head(acs_il_t)
 ```
