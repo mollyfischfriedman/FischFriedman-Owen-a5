@@ -198,11 +198,12 @@ kfunction2 <- function(k){
   new_column <- paste0("cluster_", k)
   acs_il_t[[new_column]] <- NA
   acs_il_t[[new_column]][which(!is.na(tclust$hh_income))] <- km$cluster
+  return(acs_il_t)
 }
 
-
-
-new_df <- sapply(c(2,4,6,8,10), kfunction2)
+for (i in seq(2, 10, by=2)) {
+  acs_il_t <- kfunction2(i)
+}
 ```
 
 Finally, display the first rows of the updated data set (with multiple cluster columns).
