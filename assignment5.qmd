@@ -169,11 +169,17 @@ kfunction <- function(k, n){
   kmeans(tclust, k, nstart = n)
 }
 
+## Molly's code 
+kfunction <- function(k){
+  kmeans(na.omit(tclust), k)
+}
 ```
 
 We want to utilize this function to iterate over multiple Ks (e.g., K = 2, ..., 10) and -- each time -- add the resulting cluster membership as a new variable to our (cleaned) original data frame (`acs_il_t`). There are multiple solutions for this task, e.g. think about the `apply` family or `for` loops.
 
 ```{r}
+
+
 
 kfunction2 <- function(k, y){
   km_1 <- kmeans(na.omit(tclust), k, nstart = y)
@@ -184,6 +190,19 @@ kfunction2 <- function(k, y){
 
 kfunction2(4, 10)
 table(acs_il_t$cluster)
+
+## Molly's code
+
+kfunction2 <- function(k){
+  km <- kfunction(k)
+  new_column <- paste0("cluster_", k)
+  acs_il_t[[new_column]] <- NA
+  acs_il_t[[new_column]][which(!is.na(tclust$hh_income))] <- km$cluster
+}
+
+
+
+new_df <- sapply(c(2,4,6,8,10), kfunction2)
 ```
 
 Finally, display the first rows of the updated data set (with multiple cluster columns).
