@@ -190,6 +190,6 @@ Finally, display the first rows of the updated data set (with multiple cluster c
 
 ```{r}
 
-
+head(acs_il_t, 5)
 
 ```
